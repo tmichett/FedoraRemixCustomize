@@ -31,6 +31,21 @@
       when: ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] > "35"
       become: true
 
+    - name: Create Gnome Shell Directory
+      file:
+        path: /opt/FedoraRemixCustomize/Gnome_Shell
+        state: directory
+      become: true
+
+    - name: Copy Gnome Shell Files
+      copy:
+        src: ./Files/dingrastersoft.com.v57.shell-extension.zip 
+        dest: /opt/FedoraRemixCustomize/Gnome_Shell
+      become: true
+
+    - name: Install Gnome Extension
+      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v57.shell-extension.zip
+
 - name: Gnome-Tweaks Settings
   hosts: "{{ variable_host | default('localhost') }}"
   remote_user: "{{ variable_user | default('root') }}"
