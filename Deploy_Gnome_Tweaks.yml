@@ -1,0 +1,43 @@
+# Playbook create and written by: Travis Michette
+# Contact information: tmichett@redhat.com
+# Designed and Written for Fedora
+---
+- name: Installation of Gnome-tweaks
+  hosts: "{{ variable_host | default('localhost') }}"
+  gather_facts: yes
+  vars:
+    rh9pkgs:
+      - gnome-shell-extension-dash-to-dock
+      - gnome-shell-extension-background-logo
+      - gnome-shell-extension-common
+      - gnome-shell-extension-apps-menu
+      - gnome-shell-extension-launch-new-instance
+      - gnome-shell-extension-places-menu
+      - gnome-shell-extension-window-list
+      - gnome-shell-extension-user-theme
+      - gnome-extensions-app
+
+  tasks:
+    - name: Install Gnome-Tweaks
+      yum:
+        name: gnome-tweaks
+        state: present
+      become: true
+
+    - name: Install Gnome-Shell Packages for RHEL 9 or Fedora 35+
+      yum:
+        name: "{{ rh9pkgs }}"
+        state: present
+      when: ansible_facts['distribution_major_version'] == "9" or ansible_facts['distribution_major_version'] > "35"
+      become: true
+
+- name: Gnome-Tweaks Settings
+  hosts: "{{ variable_host | default('localhost') }}"
+  remote_user: "{{ variable_user | default('root') }}"
+
+  tasks:
+    - name: Complete Gnome-Tweaks Settings for Extensions
+      command: gsettings set org.gnome.shell enabled-extensions "['apps-menu@gnome-shell-extensions.gcampax.github.com', 'desktop-icons@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'quiet-shortcuts@fourdan.gmail.com', 'window-list@gnome-shell-extensions.gcampax.github.com']"
+
+    - name: Complete Gnome-Tweaks Settings for Windows
+      command: gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
