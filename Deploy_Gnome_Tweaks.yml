@@ -39,9 +39,12 @@
 
     - name: Copy Gnome Shell Files
       copy:
-        src: ./Files/dingrastersoft.com.v57.shell-extension.zip 
+        src: ./Files/{{ item }}
         dest: /opt/FedoraRemixCustomize/Gnome_Shell
       become: true
+      loop:
+        - dingrastersoft.com.v57.shell-extension.zip
+        - add-to-desktoptommimon.github.com.v10.shell-extension.zip
 
     - name: Install Gnome Extension
       command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v57.shell-extension.zip
