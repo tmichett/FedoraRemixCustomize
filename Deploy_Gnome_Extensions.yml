@@ -1,0 +1,21 @@
+# Playbook create and written by: Travis Michette
+# Contact information: tmichett@redhat.com
+# Designed and Written for Fedora
+---
+- name: Installation of Gnome Extensions
+  hosts: localhost
+  gather_facts: yes
+ 
+  tasks:
+    - name: Install Gnome Extension Desktop Icons
+      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v57.shell-extension.zip
+
+    - name: Install Gnome Extension Create Desktop Shortcut
+      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v10.shell-extension.zip
+
+    - name:- name: Reboot System 
+      ansible.builtin.reboot:
+        msg: Reboot initiated by Ansible
+
+    
+    
