@@ -13,9 +13,9 @@
     - name: Install Gnome Extension Create Desktop Shortcut
       command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v10.shell-extension.zip
 
-    - name:- name: Reboot System 
-      ansible.builtin.reboot:
-        msg: Reboot initiated by Ansible
+    - name: Reboot System 
+      command: reboot
+      become: true
 
     
     
