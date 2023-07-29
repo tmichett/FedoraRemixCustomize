@@ -3,8 +3,9 @@
 # Designed and Written for Fedora
 ---
 - name: Installation of Gnome-tweaks
-  hosts: "{{ variable_host | default('localhost') }}"
+  hosts: localhost
   gather_facts: yes
+  connection: local
   vars:
     rh9pkgs:
       - gnome-shell-extension-dash-to-dock
@@ -54,9 +55,9 @@
       command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v10.shell-extension.zip
 
 - name: Gnome-Tweaks Settings
-  hosts: "{{ variable_host | default('localhost') }}"
+  hosts: localhost
   remote_user: "{{ variable_user | default('root') }}"
-
+  connection: local
   tasks:
     - name: Complete Gnome-Tweaks Settings for Extensions
       command: gsettings set org.gnome.shell enabled-extensions "['apps-menu@gnome-shell-extensions.gcampax.github.com', 'desktop-icons@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'quiet-shortcuts@fourdan.gmail.com', 'window-list@gnome-shell-extensions.gcampax.github.com']"
