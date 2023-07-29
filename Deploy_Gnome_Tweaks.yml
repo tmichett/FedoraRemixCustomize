@@ -47,13 +47,6 @@
         - dingrastersoft.com.v57.shell-extension.zip
         - add-to-desktoptommimon.github.com.v10.shell-extension.zip
 
-    - name: Install Gnome Extension Desktop Icons
-      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v57.shell-extension.zip
-
-
-    - name: Install Gnome Extension Create Desktop Shortcuu
-      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v10.shell-extension.zip
-
 - name: Gnome-Tweaks Settings
   hosts: localhost
   remote_user: "{{ variable_user | default('root') }}"
