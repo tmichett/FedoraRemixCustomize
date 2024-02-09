@@ -52,8 +52,11 @@
   remote_user: "{{ variable_user | default('root') }}"
   connection: local
   tasks:
+    - name: Remove Disabled Extensions
+      command: gsettings set org.gnome.shell disabled-extensions "['']"
+
     - name: Complete Gnome-Tweaks Settings for Extensions
-      command: gsettings set org.gnome.shell enabled-extensions "['apps-menu@gnome-shell-extensions.gcampax.github.com', 'desktop-icons@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'quiet-shortcuts@fourdan.gmail.com', 'window-list@gnome-shell-extensions.gcampax.github.com']"
+      command: gsettings set org.gnome.shell enabled-extensions "['apps-menu@gnome-shell-extensions.gcampax.github.com', 'desktop-icons@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'quiet-shortcuts@fourdan.gmail.com', 'window-list@gnome-shell-extensions.gcampax.github.com', 'background-logo@fedorahosted.org', 'add-to-desktop@tommimon.github.com', 'ding@rastersoft.com']"
 
     - name: Complete Gnome-Tweaks Settings for Windows
       command: gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:minimize,maximize,close'
