@@ -1,0 +1,32 @@
+# Playbook create and written by: Travis Michette
+# Contact information: tmichett@redhat.com
+# Designed and Written for Fedora
+---
+- name: Installation of Gnome Extensions
+  hosts: localhost
+  become: true
+  vars:
+    service_files:
+      - fprintd-resume.service
+      - fprintd.service
+  tasks:
+    - name: Create Service Files
+      ansible.builtin.copy:
+        src: Files/{{ items }}
+        dest: /etc/systemd/system/{{ items }}
+      loop: "{{ service_files }}"
+
+    - name: Reload Services
+      ansible.builtin.systemd_service:
+        daemon_reload: true 
+
+    - name: Enable Services
+      ansible.builtin.systemd_service:
+        name: "{{ items }}"
+        enabled: true 
+
+    - name: Start Services
+      ansible.builtin.systemd_service:
+        name: fprintd.service
+        state: started 
+

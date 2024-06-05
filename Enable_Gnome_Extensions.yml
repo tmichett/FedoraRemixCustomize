@@ -3,16 +3,11 @@
 # Designed and Written for Fedora
 ---
 - name: Installation of Gnome Extensions
-  hosts: localhost 
+  hosts: localhost
   gather_facts: yes
- 
   tasks:
     - name: Enable Gnome Extension Desktop Icons
-      command: gnome-extensions enable ding@rastersoft.com
+      ansible.builtin.command: gnome-extensions enable ding@rastersoft.com
 
     - name: Enable Gnome Extension Create Desktop Shortcut
-      command: gnome-extensions enable add-to-desktop@tommimon.github.com
-
-
-    
-    
+      ansible.builtin.command: gnome-extensions enable add-to-desktop@tommimon.github.com
