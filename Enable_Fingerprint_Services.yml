@@ -30,3 +30,10 @@
         name: fprintd.service
         state: started 
 
+    - name: Enable PAM Fingerprint Service
+      ansible.builtin.shell: authselect enable-feature with-fingerprint 
+
+    - name: Apply PAM Changes
+      ansible.builtin.shell: authselect apply-changes
+
+
