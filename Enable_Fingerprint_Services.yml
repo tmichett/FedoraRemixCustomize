@@ -12,8 +12,8 @@
   tasks:
     - name: Create Service Files
       ansible.builtin.copy:
-        src: Files/{{ items }}
-        dest: /etc/systemd/system/{{ items }}
+        src: Files/{{ item }}
+        dest: /etc/systemd/system/{{ item }}
       loop: "{{ service_files }}"
 
     - name: Reload Services
@@ -22,8 +22,9 @@
 
     - name: Enable Services
       ansible.builtin.systemd_service:
-        name: "{{ items }}"
+        name: "{{ item }}"
         enabled: true 
+      loop: "{{ service_files }}"
 
     - name: Start Services
       ansible.builtin.systemd_service:
