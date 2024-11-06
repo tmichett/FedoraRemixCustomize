@@ -4,9 +4,11 @@
   "gettext-domain": "add-to-desktop",
   "name": "Add to Desktop",
   "shell-version": [
-    "45"
+    "45",
+    "46",
+    "47"
   ],
   "url": "https://github.com/Tommimon/add-to-desktop",
   "uuid": "add-to-desktop@tommimon.github.com",
-  "version": 11
+  "version": 13
 }

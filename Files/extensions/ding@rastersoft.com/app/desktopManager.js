@@ -69,6 +69,7 @@ var DesktopManager = class {
             }
         }
         this._selectedFiles = null;
+        this._popupCounter = 0;
 
         this._premultiplied = false;
         try {
@@ -779,7 +780,92 @@ var DesktopManager = class {
         DBusUtils.RemoteFileOperations.RedoRemote();
     }
 
+    showPopup() {
+        this._popupCounter++;
+    }
+
+    hidePopup() {
+        if (this._popupCounter > 0)
+            this._popupCounter--;
+        else
+            console.log("Mismatched hidePopup() and showPopup() calls");
+    }
+
+    onKeyRelease(event, grid) {
+        if (this._popupCounter != 0)
+            return false;
+        let symbol = event.get_keyval()[1];
+        let selection = this.getCurrentSelection(false);
+        if ((symbol == Gdk.KEY_Left) || (symbol == Gdk.KEY_Right) ||
+        (symbol == Gdk.KEY_Up) || (symbol == Gdk.KEY_Down)) {
+            if (!selection) {
+                selection = this._fileList;
+            }
+            if (!selection) {
+                return false;
+            }
+            let selected = selection[0];
+            let selectedCoordinates = selected.getCoordinates();
+            this.unselectAll();
+            if (selection.length > 1) {
+                for (let item of selection) {
+                    let itemCoordinates = item.getCoordinates();
+                    if (itemCoordinates[0] > selectedCoordinates[0]) {
+                        continue;
+                    }
+                    if ((itemCoordinates[0] < selectedCoordinates[0]) ||
+                        (itemCoordinates[1] < selectedCoordinates[1])) {
+                        selected = item;
+                        selectedCoordinates = itemCoordinates;
+                        continue;
+                    }
+                }
+            }
+            let index;
+            let multiplier;
+            switch (symbol) {
+            case Gdk.KEY_Left:
+                index = 0;
+                multiplier = -1;
+                break;
+            case Gdk.KEY_Right:
+                index = 0;
+                multiplier = 1;
+                break;
+            case Gdk.KEY_Up:
+                index = 1;
+                multiplier = -1;
+                break;
+            case Gdk.KEY_Down:
+                index = 1;
+                multiplier = 1;
+                break;
+            }
+            let newDistance = null;
+            let newItem = null;
+            for (let item of this._fileList) {
+                let itemCoordinates = item.getCoordinates();
+                if ((selectedCoordinates[index] * multiplier) >= (itemCoordinates[index] * multiplier)) {
+                    continue;
+                }
+                let distance = Math.pow(selectedCoordinates[0] - itemCoordinates[0], 2) + Math.pow(selectedCoordinates[1] - itemCoordinates[1], 2);
+                if ((newDistance === null) || (newDistance > distance)) {
+                    newDistance = distance;
+                    newItem = item;
+                }
+            }
+            if (newItem === null) {
+                newItem = selected;
+            }
+            newItem.setSelected();
+            return false;
+        }
+        return false;
+    }
+
     onKeyPress(event, grid) {
+        if (this._popupCounter != 0)
+            return false;
         let symbol = event.get_keyval()[1];
         let isCtrl = (event.get_state()[1] & Gdk.ModifierType.CONTROL_MASK) != 0;
         let isShift = (event.get_state()[1] & Gdk.ModifierType.SHIFT_MASK) != 0;
@@ -858,69 +944,6 @@ var DesktopManager = class {
                 this._menu.popup_at_pointer(event);
             }
             return true;
-        } else if ((symbol == Gdk.KEY_Left) || (symbol == Gdk.KEY_Right) ||
-                   (symbol == Gdk.KEY_Up) || (symbol == Gdk.KEY_Down)) {
-            if (!selection) {
-                selection = this._fileList;
-            }
-            if (!selection) {
-                return false;
-            }
-            let selected = selection[0];
-            let selectedCoordinates = selected.getCoordinates();
-            this.unselectAll();
-            if (selection.length > 1) {
-                for (let item of selection) {
-                    let itemCoordinates = item.getCoordinates();
-                    if (itemCoordinates[0] > selectedCoordinates[0]) {
-                        continue;
-                    }
-                    if ((itemCoordinates[0] < selectedCoordinates[0]) ||
-                        (itemCoordinates[1] < selectedCoordinates[1])) {
-                        selected = item;
-                        selectedCoordinates = itemCoordinates;
-                        continue;
-                    }
-                }
-            }
-            let index;
-            let multiplier;
-            switch (symbol) {
-            case Gdk.KEY_Left:
-                index = 0;
-                multiplier = -1;
-                break;
-            case Gdk.KEY_Right:
-                index = 0;
-                multiplier = 1;
-                break;
-            case Gdk.KEY_Up:
-                index = 1;
-                multiplier = -1;
-                break;
-            case Gdk.KEY_Down:
-                index = 1;
-                multiplier = 1;
-                break;
-            }
-            let newDistance = null;
-            let newItem = null;
-            for (let item of this._fileList) {
-                let itemCoordinates = item.getCoordinates();
-                if ((selectedCoordinates[index] * multiplier) >= (itemCoordinates[index] * multiplier)) {
-                    continue;
-                }
-                let distance = Math.pow(selectedCoordinates[0] - itemCoordinates[0], 2) + Math.pow(selectedCoordinates[1] - itemCoordinates[1], 2);
-                if ((newDistance === null) || (newDistance > distance)) {
-                    newDistance = distance;
-                    newItem = item;
-                }
-            }
-            if (newItem === null) {
-                newItem = selected;
-            }
-            newItem.setSelected();
-            return false;
         } else {
             if (this.ignoreKeys.includes(symbol)) {
                 return false;
@@ -1129,7 +1152,7 @@ var DesktopManager = class {
                 try {
                     Gio.AppInfo.launch_default_for_uri_finish(result);
                 } catch (e) {
-                    log(`Error opening Desktop in Files: ${e.message}`);
+                    console.log(`Error opening Desktop in Files: ${e.message}`);
                 }
             }
         );
@@ -1711,7 +1734,7 @@ var DesktopManager = class {
         this.unselectAll();
         if (!this._renameWindow) {
             this._renamingFile = fileItem.fileName;
-            this._renameWindow = new AskRenamePopup.AskRenamePopup(fileItem, allowReturnOnSameName, () => {
+            this._renameWindow = new AskRenamePopup.AskRenamePopup(this, fileItem, allowReturnOnSameName, () => {
                 this._renameWindow = null;
                 this.newFolderDoRename = null;
                 this._renamingFile = null;
@@ -1759,7 +1782,7 @@ var DesktopManager = class {
                 info.set_attribute_string('metadata::nautilus-icon-position', '');
                 dir.set_attributes_from_info(info, Gio.FileQueryInfoFlags.NONE, null);
             } catch (e) {
-                logError(e, 'Failed to create folder');
+                console.error(e, 'Failed to create folder');
                 const header = _('Folder Creation Failed');
                 const text = _('Error while trying to create a Folder');
                 this.dbusManager.doNotify(header, text);
@@ -1796,7 +1819,7 @@ var DesktopManager = class {
             info.set_attribute_string('metadata::nautilus-icon-position', '');
             destination.set_attributes_from_info(info, Gio.FileQueryInfoFlags.NONE, null);
         } catch (e) {
-            logError(e, `Failed to create template ${e.message}`);
+            console.error(e, `Failed to create template ${e.message}`);
             const header = _('Template Creation Failed');
             const text = _('Error while trying to create a Document');
             this.dbusManager.doNotify(header, text);
