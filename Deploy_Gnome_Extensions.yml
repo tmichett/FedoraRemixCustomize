@@ -8,10 +8,10 @@
  
   tasks:
     - name: Install Gnome Extension Desktop Icons
-      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v57.shell-extension.zip
+      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/dingrastersoft.com.v71.shell-extension.zip
 
     - name: Install Gnome Extension Create Desktop Shortcut
-      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v10.shell-extension.zip
+      command: gnome-extensions install /opt/FedoraRemixCustomize/Gnome_Shell/add-to-desktoptommimon.github.com.v13.shell-extension.zip
 
     - name: Reboot System 
       command: reboot
