@@ -44,8 +44,8 @@
         dest: /opt/FedoraRemixCustomize/Gnome_Shell
       become: true
       loop:
-        - dingrastersoft.com.v57.shell-extension.zip
-        - add-to-desktoptommimon.github.com.v10.shell-extension.zip
+        - dingrastersoft.com.v76.shell-extension.zip
+        - add-to-desktoptommimon.github.com.v14.shell-extension.zip
 
 - name: Gnome-Tweaks Settings
   hosts: localhost
